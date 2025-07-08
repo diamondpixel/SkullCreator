@@ -1,4 +1,4 @@
-package day.dean.skullcreator;
+package com.skullcreator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -6,10 +6,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -19,17 +19,11 @@ import java.util.UUID;
  * Compatible with Spigot using reflection for GameProfile access.
  * Updated to handle newer Minecraft versions (1.20.5+) that use ResolvableProfile.
  *
- * @author Liparakis on 7/7/2025.
+ * @author Liparakis on 6/7/2025.
  */
 public class SkullCreator {
 
-    // Pre-encoded base64 encoder for better performance
-    private static final Base64.Encoder BASE64_ENCODER = Base64.getEncoder();
-
-    // Reusable StringBuilder for URL encoding
-    private static final ThreadLocal<StringBuilder> URL_BUILDER = ThreadLocal.withInitial(() -> new StringBuilder(128));
-
-    // Pre-created empty skull ItemStack to clone from
+    // Keeping a cached empty skull is inexpensive and avoids new ItemStack allocation
     private static final ItemStack EMPTY_SKULL = new ItemStack(Material.PLAYER_HEAD);
 
     /**
@@ -92,8 +86,8 @@ public class SkullCreator {
      */
     @Deprecated
     public static ItemStack itemWithName(ItemStack item, String name) {
-        validateNotNull(item, "item");
-        validateNotNull(name, "name");
+        Objects.requireNonNull(item, "item");
+        Objects.requireNonNull(name, "name");
 
         UUID id = Bukkit.getOfflinePlayer(name).getUniqueId();
         return itemWithUuid(item, id);
@@ -107,8 +101,8 @@ public class SkullCreator {
      * @return The head of the Player.
      */
     public static ItemStack itemWithUuid(ItemStack item, UUID id) {
-        validateNotNull(item, "item");
-        validateNotNull(id, "id");
+        Objects.requireNonNull(item, "item");
+        Objects.requireNonNull(id, "id");
 
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
@@ -125,8 +119,8 @@ public class SkullCreator {
      * @return The head associated with the URL.
      */
     public static ItemStack itemWithUrl(ItemStack item, String url) {
-        validateNotNull(item, "item");
-        validateNotNull(url, "url");
+        Objects.requireNonNull(item, "item");
+        Objects.requireNonNull(url, "url");
 
         return itemWithBase64(item, urlToBase64(url));
     }
@@ -139,11 +133,10 @@ public class SkullCreator {
      * @return The head with a custom texture.
      */
     public static ItemStack itemWithBase64(ItemStack item, String base64) {
-        validateNotNull(item, "item");
-        validateNotNull(base64, "base64");
+        Objects.requireNonNull(item, "item");
+        Objects.requireNonNull(base64, "base64");
 
-        // Phase-1: delegate via resolver to keep call-site stable
-        return day.dean.skullcreator.internal.ProfileResolver.item(item, base64);
+        return com.skullcreator.internal.ProfileResolver.item(item, base64);
     }
 
     /**
@@ -155,8 +148,8 @@ public class SkullCreator {
      */
     @Deprecated
     public static void blockWithName(Block block, String name) {
-        validateNotNull(block, "block");
-        validateNotNull(name, "name");
+        Objects.requireNonNull(block, "block");
+        Objects.requireNonNull(name, "name");
 
         setToSkull(block);
         Skull state = (Skull) block.getState();
@@ -171,8 +164,8 @@ public class SkullCreator {
      * @param id    The player to set it to.
      */
     public static void blockWithUuid(Block block, UUID id) {
-        validateNotNull(block, "block");
-        validateNotNull(id, "id");
+        Objects.requireNonNull(block, "block");
+        Objects.requireNonNull(id, "id");
 
         setToSkull(block);
         Skull state = (Skull) block.getState();
@@ -187,8 +180,8 @@ public class SkullCreator {
      * @param url   The mojang URL to set it to use.
      */
     public static void blockWithUrl(Block block, String url) {
-        validateNotNull(block, "block");
-        validateNotNull(url, "url");
+        Objects.requireNonNull(block, "block");
+        Objects.requireNonNull(url, "url");
 
         blockWithBase64(block, urlToBase64(url));
     }
@@ -200,13 +193,13 @@ public class SkullCreator {
      * @param base64 The base64 to set it to use.
      */
     public static void blockWithBase64(Block block, String base64) {
-        validateNotNull(block, "block");
-        validateNotNull(base64, "base64");
+        Objects.requireNonNull(block, "block");
+        Objects.requireNonNull(base64, "base64");
 
         setToSkull(block);
         Skull state = (Skull) block.getState();
         // Phase-1: delegate via resolver
-        day.dean.skullcreator.internal.ProfileResolver.block(state, base64);
+        com.skullcreator.internal.ProfileResolver.block(state, base64);
         state.update(true, false);
     }
 
@@ -215,17 +208,7 @@ public class SkullCreator {
     }
 
     /**
-     * Optimized validation method with inline expansion.
-     */
-    private static void validateNotNull(Object obj, String name) {
-        if (obj == null) {
-            throw new NullPointerException(name + " should not be null!");
-        }
-    }
-
-    /**
-     * Optimized URL to base64 conversion using ThreadLocal StringBuilder
-     * and pre-allocated encoder for better performance.
+     * Optimized URL to base64 conversion using pre-allocated encoder for better performance.
      */
     private static String urlToBase64(String url) {
         URI actualUrl;
@@ -235,29 +218,22 @@ public class SkullCreator {
             throw new RuntimeException(e);
         }
 
-        // Use ThreadLocal StringBuilder to avoid object creation
-        StringBuilder builder = URL_BUILDER.get();
-        builder.setLength(0); // Clear previous content
-
-        builder.append("{\"textures\":{\"SKIN\":{\"url\":\"")
-                .append(actualUrl.toString())
-                .append("\"}}}");
-
-        return BASE64_ENCODER.encodeToString(builder.toString().getBytes());
+        String json = "{\"textures\":{\"SKIN\":{\"url\":\"" + actualUrl.toString() + "\"}}}";
+        return Base64.getEncoder().encodeToString(json.getBytes());
     }
 
     /**
      * Clears the profile cache. Useful for memory management in long-running servers.
      */
     public static void clearCache() {
-        day.dean.skullcreator.internal.ProfileResolver.clearCache();
+        com.skullcreator.internal.ProfileResolver.clearCache();
     }
 
     /**
      * Gets the current cache size for monitoring purposes.
      */
     public static int getCacheSize() {
-        return day.dean.skullcreator.internal.ProfileResolver.getCacheSize();
+        return com.skullcreator.internal.ProfileResolver.getCacheSize();
     }
 
     /**
@@ -266,6 +242,6 @@ public class SkullCreator {
      * @return true if reflection was initialized successfully, false otherwise.
      */
     public static boolean isReflectionInitialized() {
-        return day.dean.skullcreator.internal.ProfileResolver.ready();
+        return com.skullcreator.internal.ProfileResolver.ready();
     }
 }

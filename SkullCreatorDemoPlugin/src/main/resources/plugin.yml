@@ -1,0 +1,17 @@
+main: com.skullcreator.demo.SkullCreatorTesterPlugin
+author: Liparakis
+version: 1.0-SNAPSHOT
+name: SkullCreatorTest
+api-version: "1.16"
+description: """
+              Comprehensive test plugin for SkullCreator library
+              This library is inspired by the original SkullCreator library (https://github.com/Deanveloper/SkullCreator)
+              which unfortunately is no longer maintained and is not compatible with newer versions of Minecraft.
+              This version features full on Reflection and works with newer versions of Minecraft.
+              """
+
+commands:
+  skulltest:
+    description: "Comprehensive SkullCreator test command"
+    usage: "/skulltest <item|block|utility|comprehensive|clear|info|help> [args...]"
+    aliases: [ st, skullt, skullcreator ]

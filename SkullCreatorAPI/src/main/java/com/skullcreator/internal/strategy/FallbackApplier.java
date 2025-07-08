@@ -1,6 +1,6 @@
-package day.dean.skullcreator.internal.strategy;
+package com.skullcreator.internal.strategy;
 
-import day.dean.skullcreator.internal.util.TexturePropertyWriter;
+import com.skullcreator.internal.util.TexturePropertyWriter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;

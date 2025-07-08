@@ -1,4 +1,4 @@
-package day.dean.skullcreator.internal.strategy;
+package com.skullcreator.internal.strategy;
 
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;

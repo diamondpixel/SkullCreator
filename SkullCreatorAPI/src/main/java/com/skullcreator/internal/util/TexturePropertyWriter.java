@@ -1,6 +1,4 @@
-package day.dean.skullcreator.internal.util;
-
-import org.bukkit.Bukkit;
+package com.skullcreator.internal.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
