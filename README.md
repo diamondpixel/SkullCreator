@@ -104,7 +104,7 @@ $ ./gradlew clean build                     # builds API + shaded demo jar
 $ ./gradlew :SkullCreatorDemoPlugin:shadowJar
 
 # Copy the resulting jar from
-#   build/Demo/libs/SkullCreatorDemoPlugin-3.0.1.jar
+#   build/Demo/libs/SkullCreatorDemoPlugin-x.x.x-SNAPSHOT.jar
 # into your Paper / Spigot server's plugins/ folder, then run:
 > /skulltest comprehensive
 ```
