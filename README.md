@@ -1,11 +1,11 @@
-# 💀 SkullCreator
+# SkullCreator
 
 ![Java](https://img.shields.io/badge/language-Java%2021-orange)
 ![Minecraft](https://img.shields.io/badge/MC-1.12%2B-green)
 ![License](https://img.shields.io/github/license/diamondpixel/SkullCreator)
 
 SkullCreator is a tiny library that makes creating custom player heads in CraftBukkit / Spigot / Paper plugins a breeze.  
-Stop implementing **100MB** worth of independent plugins for **1MB** worth of code when you can just use this library 😎.
+Stop implementing **100MB** worth of independent plugins for **1MB** worth of code when you can just use this library .
 
 > "Why spend minutes typing commands when you can spend _**EONS**_ writing code?" ~ **Probably You**
 
@@ -35,22 +35,29 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
 ---
 
 ## Quick Start
-1. **Add the dependency** (Maven example):
+1. **Add the dependency** (Gradle – Kotlin DSL):
+
+   ```kotlin
+   repositories {
+       // add Paper repo for Spigot snapshots
+       maven("https://repo.papermc.io/repository/maven-public/")
+   }
+
+   dependencies {
+       compileOnly("io.github.diamondpixel:skullcreator:3.0.1")
+   }
+   ```
+
+   <details>
+   <summary>Maven (legacy)</summary>
 
    ```xml
    <dependency>
        <groupId>io.github.diamondpixel</groupId>
        <artifactId>skullcreator</artifactId>
-       <version>2.0.3</version>
-       <scope>compile</scope> <!-- because the server doesn't have it -->
+       <version>3.0.1</version>
+       <scope>compile</scope>
    </dependency>
-   ```
-
-   <details>
-   <summary>Gradle (Kotlin DSL)</summary>
-
-   ```kotlin
-   compileOnly("io.github.diamondpixel:skullcreator:2.0.3")
    ```
    </details>
 
@@ -91,21 +98,25 @@ This repository ships with a small **demo plugin** showing the library in action
 ```bash
 # Clone & build the project
 $ git clone https://github.com/diamondpixel/SkullCreator.git
-$ mvn -pl SkullCreatorDemo -am clean package
+$ cd SkullCreator
+$ ./gradlew clean build                     # builds API + shaded demo jar
+#   or only build the shaded demo jar
+$ ./gradlew :SkullCreatorDemoPlugin:shadowJar
 
-# Drop the demo jar into your Paper / Spigot server's plugins/ folder
-# Start the server and run the command in-game:
+# Copy the resulting jar from
+#   build/Demo/libs/SkullCreatorDemoPlugin-3.0.1.jar
+# into your Paper / Spigot server's plugins/ folder, then run:
 > /skulltest comprehensive
 ```
-The command will run a comprehensive test of all features.
+The command will execute a comprehensive test of all features.
 
 
 ---
 
 ## Technology
-- **Java 21** 
+- **Java 21**
 - **Spigot / Paper API**
-- **Maven** build files supplied
+- **Gradle** build system (Kotlin DSL)
 
 ---
 
