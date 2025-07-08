@@ -39,7 +39,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
 
    ```xml
    <dependency>
-       <groupId>com.github.diamondpixel</groupId>
+       <groupId>io.github.diamondpixel</groupId>
        <artifactId>skullcreator</artifactId>
        <version>2.0.3</version>
        <scope>compile</scope> <!-- because the server doesn't have it -->
@@ -50,7 +50,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    <summary>Gradle (Kotlin DSL)</summary>
 
    ```kotlin
-   compileOnly("com.github.diamondpixel:skullcreator:2.0.3")
+   compileOnly("io.github.diamondpixel:skullcreator:2.0.3")
    ```
    </details>
 
