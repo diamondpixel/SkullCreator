@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Comprehensive test plugin for SkullCreator library.
  * Tests all available functions and methods.
  *
- * @author deanveloper on 12/28/2016.
+ * @author Liparakis on 8/7/2025.
  */
 public class SkullCreatorTesterPlugin extends JavaPlugin {
 
@@ -39,15 +39,15 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String lbl, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("This command can only be used by players!");
-            return true;
-        }
-
-        Player p = (Player) sender;
+        boolean isPlayer = sender instanceof Player;
+        Player p = isPlayer ? (Player) sender : null;
 
         if (args.length == 0) {
-            showHelp(p);
+            if (isPlayer) {
+                showHelp(p);
+            } else {
+                sender.sendMessage("Usage: /skulltest comprehensive | clear | info");
+            }
             return true;
         }
 
@@ -62,9 +62,12 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
                 case "utility":
                     testUtilityMethods(p);
                     break;
-                case "comprehensive":
-                    runComprehensiveTest(p);
+                case "comprehensive": {
+                    if (isPlayer) runComprehensiveTest(p);
+                    else runComprehensiveHeadless(sender);
                     break;
+                }
+
                 case "clear":
                     SkullCreator.clearCache();
                     send(p, ChatColor.GREEN + "Cache cleared! New size: " + SkullCreator.getCacheSize());
@@ -77,7 +80,8 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
                     break;
             }
         } catch (Exception e) {
-            send(p, ChatColor.RED + "Error: " + e.getMessage());
+            if (isPlayer) send(p, ChatColor.RED + "Error: " + e.getMessage());
+            else sender.sendMessage("Error: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -281,7 +285,7 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
         p.sendMessage("§7Testing utility methods...");
         boolean reflection = SkullCreator.isReflectionInitialized();
 
-        final int testingSample = 100_000_000;
+        final int testingSample = 1000;
         p.sendMessage("§eStarting asynchronous performance tests (" + testingSample + " iterations)...");
 
         final JavaPlugin plugin = this;
@@ -322,7 +326,52 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
                 p.sendMessage("§a✓ All tests completed successfully!");
             });
         });
-        return;
+    }
+
+    /**
+     * Headless variant of the comprehensive test – skips player inventory/block
+     * work so it can be launched from the console or CI.
+     */
+    private void runComprehensiveHeadless(CommandSender out) {
+        final int iterations = 1000;           // adjust for CI speed
+        out.sendMessage("§e[Headless] Running comprehensive test (" + iterations + " iterations)…");
+
+        final long asyncStart = System.currentTimeMillis();
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            boolean reflection = SkullCreator.isReflectionInitialized();
+
+            // Cached loop
+            long cachedStart = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                String data = TEST_SKULLS.get(ThreadLocalRandom.current().nextInt(TEST_SKULLS.size()));
+                SkullCreator.itemFromBase64(data);
+            }
+            long cachedEnd = System.currentTimeMillis();
+
+            int cacheSize = SkullCreator.getCacheSize();
+
+            // Uncached loop
+            long uncachedStart = System.currentTimeMillis();
+            for (int i = 0; i < iterations; i++) {
+                String data = TEST_SKULLS.get(ThreadLocalRandom.current().nextInt(TEST_SKULLS.size()));
+                SkullCreator.clearCache();
+                SkullCreator.itemFromBase64(data);
+            }
+            long uncachedEnd = System.currentTimeMillis();
+
+            SkullCreator.clearCache();
+            long asyncEnd = System.currentTimeMillis();
+
+            Bukkit.getScheduler().runTask(this, () -> {
+                out.sendMessage("§a[Headless] Test complete!");
+                out.sendMessage("§7Total time: " + (asyncEnd - asyncStart) + "ms");
+                out.sendMessage("§7Reflection working: " + (reflection ? "§a✓" : "§c✗"));
+                out.sendMessage("§7Cache size reached: " + cacheSize);
+                out.sendMessage("§7Cached loop: " + (cachedEnd - cachedStart) + "ms");
+                out.sendMessage("§7Uncached loop: " + (uncachedEnd - uncachedStart) + "ms");
+                out.sendMessage("§a✓ Headless comprehensive test finished");
+            });
+        });
     }
 
     private void showInfo(Player p) {

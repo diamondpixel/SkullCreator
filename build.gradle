@@ -1,0 +1,87 @@
+plugins {
+    id 'java-library'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    repositories {
+        maven {
+            url 'https://repo.papermc.io/repository/maven-public/'
+        }
+        mavenCentral()
+    }
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    }
+
+    group = "io.github.diamondpixel"
+    version = "3.0.1"
+
+    publishing {
+        publications {
+            create("maven", MavenPublication) {
+                from(components["java"])
+
+                pom {
+                    name.set("skullcreator")
+                    description.set("A library to create player skulls from usernames, UUIDs, base64, or URLs.")
+                    url.set("https://github.com/diamondpixel/skullcreator")
+
+                    licenses {
+                        license {
+                            name.set("MIT License") // Update if needed
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id.set("diamondpixel")
+                            name.set("DiamondPixel") // Optional display name
+                        }
+                    }
+
+                    scm {
+                        connection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
+                        developerConnection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
+                        url.set("https://github.com/diamondpixel/skullcreator")
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "OSSRH"
+                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                credentials {
+                    username = project.findProperty("ossrhUsername") as String ?: System.getenv("OSSRH_USERNAME")
+                    password = project.findProperty("ossrhPassword") as String ?: System.getenv("OSSRH_PASSWORD")
+                }
+            }
+        }
+    }
+
+    signing {
+        useGpgCmd() 
+        sign(publishing.publications["maven"])
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+}
+
+// Custom build output directories
+project(":SkullCreatorAPI") {
+    buildDir = "${rootDir}/build/API"
+}
+
+project(":SkullCreatorDemoPlugin") {
+    buildDir = "${rootDir}/build/Demo"
+}
