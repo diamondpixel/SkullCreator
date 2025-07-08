@@ -29,8 +29,23 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
   - Player **UUID**
   - **Base64** texture string
   - Direct **Mojang texture URL**
-- Works on **Minecraft 1.12.2 and newer**
-- Zero external dependencies – just one **Jar** dependency / (or a couple source files)
+- + Works on **Minecraft 1.21.5 and newer** (testing older versions down to 1.8.x in progress)
+- - Zero external dependencies – just one **Jar** dependency / (or a couple source files)
+
+### Compatibility Matrix
+
+| Minecraft Version | Status |
+|-------------------|:------:|
+| 1.21.5+           | ✅ |
+| 1.20.x            | ❓ |
+| 1.19.x            | ❓ |
+| 1.18.x            | ❓ |
+| 1.17.x            | ❓ |
+| 1.16.x            | ❓ |
+| 1.12 – 1.8        | ❓ |
+| < 1.8             | ❌ |
+
+✅ = fully tested & working · ❓ = not yet tested · ❌ = not supported.
 
 ---
 
