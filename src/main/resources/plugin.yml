@@ -1,8 +1,31 @@
 main: day.dean.skullcreator.SkullCreatorTesterPlugin
 author: deanveloper
-version: 0
+version: 1.0-SNAPSHOT
 name: SkullCreatorTest
-api-version: "1.13"
+api-version: "1.16"
+description: "Comprehensive test plugin for SkullCreator library"
+
 commands:
   testskull:
-    description: "lol what"
+    description: "Legacy skull test command"
+    usage: "/testskull <item|block>"
+    aliases: [ts]
+
+  skulltest:
+    description: "Comprehensive SkullCreator test command"
+    usage: "/skulltest <item|block|utility|comprehensive|clear|info|help> [args...]"
+    aliases: [st, skullt, skullcreator]
+
+permissions:
+  skullcreator.test:
+    description: "Allows using SkullCreator test commands"
+    default: op
+  skullcreator.test.item:
+    description: "Allows testing item methods"
+    default: op
+  skullcreator.test.block:
+    description: "Allows testing block methods"
+    default: op
+  skullcreator.test.utility:
+    description: "Allows testing utility methods"
+    default: op
