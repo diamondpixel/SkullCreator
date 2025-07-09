@@ -227,8 +227,9 @@ public class SkullCreator {
 
         setToSkull(block);
         Skull state = (Skull) block.getState();
+        // Phase-1: delegate via resolver
         com.skullcreator.internal.ProfileResolver.block(state, base64);
-        state.update(true, true);
+        state.update(true, false);
     }
 
     private static void setToSkull(Block block) {

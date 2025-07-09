@@ -29,21 +29,21 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
   - Player **UUID**
   - **Base64** texture string
   - Direct **Mojang texture URL**
-- + Works on **Minecraft 1.21.5 and newer** (testing older versions down to 1.8.x in progress)
+- + Works on **Minecraft 1.8.x and newer** 
 - - Zero external dependencies – just one **Jar** dependency / (or a couple source files)
 
 ### Compatibility Matrix
 
-| Minecraft Version | Status |
-|-------------------|:------:|
-| 1.21.5+           | ✅ |
-| 1.20.x            | ❓ |
-| 1.19.x            | ❓ |
-| 1.18.x            | ❓ |
-| 1.17.x            | ❓ |
-| 1.16.x            | ❓ |
-| 1.12 – 1.8        | ❓ |
-| < 1.8             | ❌ |
+| Minecraft Version | Status | Platform |
+|-------------------|:------:|:--------:|
+| 1.21.5+           | ❓ |**Paper** (On others only the Item)
+| 1.20.x            | ✅ |**Bukkit / Spigot / Paper**
+| 1.19.x            | ✅ |**Bukkit / Spigot / Paper**
+| 1.18.x            | ✅ |**Bukkit / Spigot / Paper**
+| 1.17.x            | ✅ |**Bukkit / Spigot / Paper**
+| 1.16.x            | ✅ |**Bukkit / Spigot / Paper**
+| 1.12 – 1.8        | ✅ |**Bukkit / Spigot / Paper**
+| < 1.8             | ❌ |**Bukkit / Spigot / Paper**
 
 ✅ = fully tested & working · ❓ = not yet tested · ❌ = not supported.
 

@@ -41,18 +41,8 @@ public final class TexturePropertyWriter {
             Method getProps = profileObj.getClass().getMethod("getProperties");
             Object props = getProps.invoke(profileObj);
             Class<?> propClass = Class.forName("com.mojang.authlib.properties.Property");
-            Constructor<?> propCtor;
-            try {
-                propCtor = propClass.getConstructor(String.class, String.class);
-            } catch (NoSuchMethodException ex) {
-                propCtor = propClass.getConstructor(String.class, String.class, String.class);
-            }
-            Object texProp;
-            try {
-                texProp = propCtor.newInstance("textures", base64);
-            } catch (Exception ex) {
-                texProp = propCtor.newInstance("textures", base64, null);
-            }
+            Constructor<?> propCtor = propClass.getConstructor(String.class, String.class);
+            Object texProp = propCtor.newInstance("textures", base64);
 
             try {
                 Method put = props.getClass().getMethod("put", Object.class, Object.class);

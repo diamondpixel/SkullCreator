@@ -70,7 +70,6 @@ public class FallbackApplier implements ProfileApplier {
             for (Method m : skull.getClass().getMethods()) {
                 if (m.getName().equals("setPlayerProfile") && m.getParameterCount() == 1) {
                     m.invoke(skull, playerProfile);
-                    skull.update(true);
                     return;
                 }
             }
@@ -99,7 +98,6 @@ public class FallbackApplier implements ProfileApplier {
                 Method setType = skull.getClass().getMethod("setSkullType", skullType);
                 setType.invoke(skull, playerType);
             } catch (Exception ignored) {}
-            skull.update(true);
         } catch (Exception ignored) {}
     }
 }
