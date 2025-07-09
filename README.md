@@ -4,6 +4,10 @@
 ![Minecraft](https://img.shields.io/badge/MC-1.12%2B-green)
 ![License](https://img.shields.io/github/license/diamondpixel/SkullCreator)
 
+ATTENTION THIS LIBRARY IS UNDER CONSTRUCTION AND WON'T BE AVAILABLE THROUGH MAVEN REPOSITORY UNTIL I RELEASE IT.
+CURRENTY I AM AWAY FROM HOME, AND I CAN'T WORK ON THIS. THE LIBRARY IS FUNCTIONAL UP TO 1.20.6 FULLY ONLY 1.21.x HAS
+SOME PROBLEM WITH THE BLOCKS. I WILL CONTINUE THIS PROJECT IN THE FUTURE.
+
 SkullCreator is a tiny library that makes creating custom player heads in CraftBukkit / Spigot / Paper plugins a breeze.  
 Stop implementing **100MB** worth of independent plugins for **1MB** worth of code when you can just use this library .
 
