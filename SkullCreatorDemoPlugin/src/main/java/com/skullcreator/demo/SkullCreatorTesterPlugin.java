@@ -12,8 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -168,7 +170,7 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
             return;
         }
 
-        Block targetBlock = p.getTargetBlockExact(5);
+        Block targetBlock = getTargetBlock(p, 5);
         if (targetBlock == null || targetBlock.getType() == Material.AIR) {
             send(p, ChatColor.RED + "Please look at a block within 5 blocks!");
             return;
@@ -275,7 +277,7 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
         p.getInventory().addItem(modSkull1, modSkull2, modSkull3, modSkull4);
 
         // Test block methods if looking at a block
-        Block targetBlock = p.getTargetBlockExact(5);
+        Block targetBlock = getTargetBlock(p, 5);
         if (targetBlock != null && targetBlock.getType() != Material.AIR) {
             p.sendMessage("§7Testing block methods...");
             SkullCreator.blockWithBase64(targetBlock, TEST_SKULL);
@@ -409,6 +411,32 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
         sender.sendMessage(message);
     }
 
+    /**
+     * Retrieves the block a player is looking at in a version-safe manner.
+     * Uses {@code Player#getTargetBlockExact(int)} on 1.13+ and falls back to
+     * the legacy {@code Player#getTargetBlock(Set, int)} on older versions
+     * (e.g. 1.8–1.12).
+     */
+    private Block getTargetBlock(Player player, int maxDistance) {
+        try {
+            // 1.13+ – method signature: Block getTargetBlockExact(int)
+            Method exact = Player.class.getMethod("getTargetBlockExact", int.class);
+            return (Block) exact.invoke(player, maxDistance);
+        } catch (NoSuchMethodException ignored) {
+            // 1.8 – 1.12 – method signature: Block getTargetBlock(Set, int)
+            try {
+                Method legacy = Player.class.getMethod("getTargetBlock", Set.class, int.class);
+                // Empty set = default transparent materials
+                return (Block) legacy.invoke(player, null, maxDistance);
+            } catch (Exception e) {
+                // Should never happen, but just in case
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /* ---------------- reflection helpers ---------------- */
 
     private String buildReflectionDetails() {
@@ -467,8 +495,8 @@ public class SkullCreatorTesterPlugin extends JavaPlugin {
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNlMzdkOWVmMDc2M2Y0YTRjZmY2ZGJhMGRkNjMxNTMwNjEwZmUyYWJkZGQ3ZWMxMDUyYWIxNmI5MDUyZDg3MCJ9fX0=",
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTRhZWVkMDMzZjgyMDI4MWIwNGVkMWIzOWUwOTQxZGVlNGE2MDI3MDE1MGJkMjAwODY0YzNmNTFiYTkxZjVhYiJ9fX0=",
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ViYTI5NzhkYzgxODdmNWY2ZjViMzVlMzE3ZWRiOWQ4ZDVlNzQ5YzYzOTRmMzliYjdlM2I4MGYyNWU1ZjQzNiJ9fX0=",
-            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzA5ZTEwNGQ1YWVjMTM4OTQyNzkzYmE1ODMyYWFkMTZkMzg2NWQ5MzhkYjNiMmQ3OWFhYmFiZWYwMGMwYTYxMCJ9fX0=",
-            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdjZDcyMDMwMDVhNmZhM2EyODIxNTk3MGE2N2U1NjQ1MzdhYzBjMjcxMTgxM2I2MjZkOTUxNmQyNWY2YTU3MyJ9fX0=",
+            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQyYjllYzM0OTYwNjRiMDg1ZjdkMzBjZTkwYTBjOGY3NjM2YzhlZjUzMDNiMjBjMjVjYTEwYTk5N2JkNzQzMyJ9fX0=",
+            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzgxNDVmMDQ3ODMzNWU4OTc1NzU0YjdmZjhhY2NkZDEwNzQzMTBlM2VjNDJjMTIyNDliMDI0NTkwNjZhYmNkZCJ9fX0=",
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTY4NTJiNzdlZTYzNmRmODgyOWU5NTk5ZTY3YmM3ZDZiZmUzZWY2ZjNjODYzNzY0YWYxN2IxYmRmNjFmOWRlMSJ9fX0=",
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmI3NzJiMmI5YmYxMDhlZjE1ZGUxNTU2YzQxZWVjMGNjNzgxYTllNmNjNjUwNzY2OWUwZDJjM2I1NmI3NDBjYyJ9fX0=",
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc3MGY2Y2NhZjg4NjFkYTNjODgxMjgyNWFmYWVjNWE5NWM1ZjMzNmY3MjhhMjZmMTM1YTI1OTRiNDg3NTQwMiJ9fX0=",

@@ -1,2 +1,2 @@
 rootProject.name = "SkullCreator"
-include("SkullCreatorAPI", "SkullCreatorDemoPlugin")
+include("SkullCreatorAPI", "SkullCreatorDemoPlugin", "SkullCreatorLegacyPlugin")

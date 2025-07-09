@@ -27,6 +27,7 @@ public final class ReflectionBootstrap {
         if (ctx != null) {
             return new ModernApplier(ctx);
         }
+
         return new FallbackApplier();
     }
 
@@ -103,6 +104,50 @@ public final class ReflectionBootstrap {
             }
         } catch (NoSuchMethodException ignored) {
             // Block reflection not available on this server; ModernApplier will fallback
+        }
+
+        // Fallback: try any method named setProfile or setGameProfile with one parameter
+        for (Method m : craftSkullCls.getDeclaredMethods()) {
+            if ((m.getName().equals("setProfile") || m.getName().equals("setGameProfile"))
+                    && m.getParameterCount() == 1) {
+                setProfileMethod = m;
+                setProfileMethod.setAccessible(true);
+                break;
+            }
+        }
+
+        // Prefer non-PlayerProfile methods (they write NBT correctly). Iterate twice: first look for non-Bukkit profile param, else fallback.
+        if (setProfileMethod == null) {
+            Method candidatePlayerProfile = null;
+            for (Method m : craftSkullCls.getDeclaredMethods()) {
+                if (m.getParameterCount() != 1) continue;
+                String nameLower = m.getName().toLowerCase();
+                if (!(nameLower.contains("profile"))) continue;
+                Class<?> ptype = m.getParameterTypes()[0];
+                if (ptype.getName().equals("org.bukkit.profile.PlayerProfile")) {
+                    candidatePlayerProfile = m; // consider later
+                    continue;
+                }
+                // choose first non-PlayerProfile param method
+                setProfileMethod = m;
+                setProfileMethod.setAccessible(true);
+                break;
+            }
+            if (setProfileMethod == null && candidatePlayerProfile != null) {
+                setProfileMethod = candidatePlayerProfile;
+                setProfileMethod.setAccessible(true);
+            }
+        }
+
+        // Broader fallback: any method with 1 param where name contains "Profile"
+        if (setProfileMethod == null) {
+            for (Method m : craftSkullCls.getDeclaredMethods()) {
+                if (m.getParameterCount()==1 && m.getName().toLowerCase().contains("profile")) {
+                    setProfileMethod = m;
+                    setProfileMethod.setAccessible(true);
+                    break;
+                }
+            }
         }
 
         return new ReflectionContext(

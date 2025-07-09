@@ -30,13 +30,15 @@ public final class ProfileResolver {
     }
 
     public static void clearCache() {
-        if (APPLIER instanceof com.skullcreator.internal.strategy.ModernApplier modern) {
+        if (APPLIER instanceof com.skullcreator.internal.strategy.ModernApplier) {
+            com.skullcreator.internal.strategy.ModernApplier modern = (com.skullcreator.internal.strategy.ModernApplier) APPLIER;
             modern.clearCache();
         }
     }
 
     public static int getCacheSize() {
-        if (APPLIER instanceof com.skullcreator.internal.strategy.ModernApplier modern) {
+        if (APPLIER instanceof com.skullcreator.internal.strategy.ModernApplier) {
+            com.skullcreator.internal.strategy.ModernApplier modern = (com.skullcreator.internal.strategy.ModernApplier) APPLIER;
             return modern.getCacheSize();
         }
         return 0;

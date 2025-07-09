@@ -23,8 +23,19 @@ import java.util.UUID;
  */
 public class SkullCreator {
 
-    // Keeping a cached empty skull is inexpensive and avoids new ItemStack allocation
-    private static final ItemStack EMPTY_SKULL = new ItemStack(Material.PLAYER_HEAD);
+    // Resolve skull material in a version-safe way at runtime
+    private static final Material SKULL_MATERIAL;
+    private static final boolean LEGACY_DATA;
+    static {
+        Material tmp = Material.matchMaterial("PLAYER_HEAD");
+        if (tmp == null) tmp = Material.matchMaterial("SKULL_ITEM");
+        SKULL_MATERIAL = tmp;
+        LEGACY_DATA = "SKULL_ITEM".equals(SKULL_MATERIAL.name());
+    }
+
+    // Cached empty skull avoids new ItemStack allocation (durability 3 for legacy)
+    private static final ItemStack EMPTY_SKULL = LEGACY_DATA ? new ItemStack(SKULL_MATERIAL, 1, (short) 3)
+                                                            : new ItemStack(SKULL_MATERIAL);
 
     /**
      * Creates a player skull using modern Material.PLAYER_HEAD.
@@ -105,7 +116,15 @@ public class SkullCreator {
         Objects.requireNonNull(id, "id");
 
         SkullMeta meta = (SkullMeta) item.getItemMeta();
-        meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+        try {
+            // 1.13+
+            meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+        } catch (NoSuchMethodError ignored) {
+            // 1.8–1.12 legacy API
+            String name = Bukkit.getOfflinePlayer(id).getName();
+            if (name == null) name = id.toString();
+            meta.setOwner(name);
+        }
         item.setItemMeta(meta);
 
         return item;
@@ -153,7 +172,11 @@ public class SkullCreator {
 
         setToSkull(block);
         Skull state = (Skull) block.getState();
-        state.setOwningPlayer(Bukkit.getOfflinePlayer(name));
+        try {
+            state.setOwningPlayer(Bukkit.getOfflinePlayer(name));
+        } catch (NoSuchMethodError ignored) {
+            state.setOwner(name);
+        }
         state.update(false, false);
     }
 
@@ -169,7 +192,13 @@ public class SkullCreator {
 
         setToSkull(block);
         Skull state = (Skull) block.getState();
-        state.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+        try {
+            state.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+        } catch (NoSuchMethodError ignored) {
+            String name = Bukkit.getOfflinePlayer(id).getName();
+            if (name == null) name = id.toString();
+            state.setOwner(name);
+        }
         state.update(false, false);
     }
 
@@ -198,13 +227,14 @@ public class SkullCreator {
 
         setToSkull(block);
         Skull state = (Skull) block.getState();
-        // Phase-1: delegate via resolver
         com.skullcreator.internal.ProfileResolver.block(state, base64);
-        state.update(true, false);
+        state.update(true, true);
     }
 
     private static void setToSkull(Block block) {
-        block.setType(Material.PLAYER_HEAD, false);
+        Material blockMat = Material.matchMaterial("PLAYER_HEAD");
+        if (blockMat == null) blockMat = Material.matchMaterial("SKULL");
+        block.setType(blockMat, false);
     }
 
     /**

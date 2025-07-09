@@ -1,8 +1,8 @@
 main: com.skullcreator.demo.SkullCreatorTesterPlugin
 author: Liparakis
-version: 2.0.3-SNAPSHOT
+version: 2.0.4-SNAPSHOT
 name: SkullCreatorTest
-api-version: "1.16"
+api-version: "1.13"
 description: "
               Comprehensive test plugin for SkullCreator library
               This library is inspired by the original SkullCreator library (https://github.com/Deanveloper/SkullCreator)
