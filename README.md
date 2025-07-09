@@ -133,7 +133,7 @@ The command will execute a comprehensive test of all features.
 ---
 
 ## Technology
-- **Java 21**
+- **Java 8**
 - **Spigot / Paper API**
 - **Gradle** build system (Kotlin DSL)
 
