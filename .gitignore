@@ -6,7 +6,6 @@ build/
 target/
 # Gradle
 .gradle/
-!gradle/wrapper/gradle-wrapper.jar
 # IDE generic
 *.iml
 *.ipr
