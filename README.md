@@ -2,7 +2,6 @@
 
 ![Java](https://img.shields.io/badge/language-Java%208-blue)
 ![Minecraft](https://img.shields.io/badge/MC-1.8%2B-green)
-![License](https://img.shields.io/github/license/diamondpixel/SkullCreator)
 
 > **New in v3.1.0** – Full support for **Minecraft 1.21.x** (items *and* block skulls) while
 > still running on legacy **Java 8** servers!  
@@ -68,7 +67,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    ```
 
    <details>
-   <summary>Maven (legacy)</summary>
+   <summary>Maven</summary>
 
    ```xml
    <dependency>
@@ -123,7 +122,7 @@ $ ./gradlew clean build                     # builds API + shaded demo jar
 $ ./gradlew :SkullCreatorDemoPlugin:shadowJar
 
 # Copy the resulting jar from
-#   build/Demo/libs/SkullCreatorDemoPlugin-3.1.0-SNAPSHOT.jar
+#   build/Demo/libs/SkullCreatorDemoPlugin-X.Y.Z-SNAPSHOT.jar
 # into your Paper / Spigot server's plugins/ folder, then run:
 > /skulltest comprehensive
 ```
