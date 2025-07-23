@@ -23,7 +23,7 @@ jobs:
       - name: Publish to Maven Central
         uses: gradle/gradle-build-action@v3
         with:
-          arguments: publish
+          arguments: publishToCentralPortal
         env:
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}

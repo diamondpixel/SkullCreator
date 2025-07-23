@@ -1,5 +1,7 @@
 plugins {
     id 'java-library'
+    // Adds tasks to upload a deployment bundle to the new Central Portal
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 subprojects {
@@ -55,16 +57,7 @@ subprojects {
                 }
             }
 
-            repositories {
-                maven {
-                    name = "CentralPortal"
-                    url = uri("https://central.sonatype.com/api/v1/publish")
-                    credentials {
-                        username = project.findProperty("sonatypeUsername") as String ?: System.getenv("SONATYPE_USER")
-                        password = project.findProperty("sonatypePassword") as String ?: System.getenv("SONATYPE_TOKEN")
-                    }
-                }
-            }
+            // No direct repository; upload handled by nexusPublishing plugin
         }
 
         signing {
@@ -90,4 +83,17 @@ project(":SkullCreatorAPI") {
 
 project(":SkullCreatorDemoPlugin") {
     buildDir = "${rootDir}/build/Demo"
+}
+
+// Configure Central Portal publishing once per root project
+if (project == rootProject) {
+    nexusPublishing {
+        repositories {
+            create("centralPortal") {
+                nexusUrl.set(uri("https://central.sonatype.com"))
+                username.set(System.getenv("SONATYPE_USER"))
+                password.set(System.getenv("SONATYPE_TOKEN"))
+            }
+        }
+    }
 }
