@@ -19,61 +19,63 @@ subprojects {
     }
 
     group = "io.github.diamondpixel"
-    version = "3.0.1"
+    version = "3.1.0"
 
-    publishing {
-        publications {
-            create("maven", MavenPublication) {
-                from(components["java"])
+    if (project.name == "SkullCreatorAPI") {
+        publishing {
+            publications {
+                create("maven", MavenPublication) {
+                    from(components["java"])
 
-                pom {
-                    name.set("skullcreator")
-                    description.set("A library to create player skulls from usernames, UUIDs, base64, or URLs.")
-                    url.set("https://github.com/diamondpixel/skullcreator")
-
-                    licenses {
-                        license {
-                            name.set("MIT License") // Update if needed
-                            url.set("https://opensource.org/licenses/MIT")
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id.set("diamondpixel")
-                            name.set("DiamondPixel") // Optional display name
-                        }
-                    }
-
-                    scm {
-                        connection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
-                        developerConnection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
+                    pom {
+                        name.set("skullcreator")
+                        description.set("A library to create player skulls from usernames, UUIDs, base64, or URLs.")
                         url.set("https://github.com/diamondpixel/skullcreator")
+
+                        licenses {
+                            license {
+                                name.set("MIT License") // Update if needed
+                                url.set("https://opensource.org/licenses/MIT")
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id.set("diamondpixel")
+                                name.set("DiamondPixel") // Optional display name
+                            }
+                        }
+
+                        scm {
+                            connection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
+                            developerConnection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
+                            url.set("https://github.com/diamondpixel/skullcreator")
+                        }
+                    }
+                }
+            }
+
+            repositories {
+                maven {
+                    name = "OSSRH"
+                    url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    credentials {
+                        username = project.findProperty("ossrhUsername") as String ?: System.getenv("OSSRH_USERNAME")
+                        password = project.findProperty("ossrhPassword") as String ?: System.getenv("OSSRH_PASSWORD")
                     }
                 }
             }
         }
 
-        repositories {
-            maven {
-                name = "OSSRH"
-                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                credentials {
-                    username = project.findProperty("ossrhUsername") as String ?: System.getenv("OSSRH_USERNAME")
-                    password = project.findProperty("ossrhPassword") as String ?: System.getenv("OSSRH_PASSWORD")
-                }
-            }
+        signing {
+            useGpgCmd()
+            sign(publishing.publications["maven"])
         }
-    }
 
-    signing {
-        useGpgCmd()
-        sign(publishing.publications["maven"])
-    }
-
-    java {
-        withSourcesJar()
-        withJavadocJar()
+        java {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
