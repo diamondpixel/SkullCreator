@@ -10,12 +10,12 @@ import java.lang.annotation.Target;
  * Minecraft version prefix strings they support.
  * <p>
  * Example:
- * <pre>{@code
+ * <pre><code>
  * @SupportedVersion({"1.20", "1.20.1"})
  * public final class Patch120x implements VersionPatch {
  *     // ...
  * }
- * }</pre>
+ * </code></pre>
  * The bootstrap loader matches the running server's version (e.g. "1.20.6")
  * against the supplied {@code value()} prefixes using {@code String#startsWith}.
  */
