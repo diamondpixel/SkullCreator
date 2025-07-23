@@ -90,7 +90,9 @@ if (project == rootProject) {
     nexusPublishing {
         repositories {
             create("centralPortal") {
+                // Central Portal requires both release and snapshot endpoints
                 nexusUrl.set(uri("https://central.sonatype.com"))
+                snapshotRepositoryUrl.set(uri("https://central.sonatype.com"))
                 username.set(System.getenv("SONATYPE_USER"))
                 password.set(System.getenv("SONATYPE_TOKEN"))
             }
