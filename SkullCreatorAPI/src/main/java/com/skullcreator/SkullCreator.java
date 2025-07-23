@@ -16,8 +16,8 @@ import java.util.UUID;
  * A library for the Bukkit API to create player skulls
  * from names, base64 strings, and texture URLs.
  * <p>
- * Compatible with Spigot using reflection for GameProfile access.
- * Updated to handle newer Minecraft versions (1.20.5+) that use ResolvableProfile.
+ * Compatible with Spigot/Paper across Minecraft versions using the new
+ * VersionPatch system (see {@code com.skullcreator.patch}).
  *
  * @author Liparakis on 6/7/2025.
  */
@@ -155,7 +155,7 @@ public class SkullCreator {
         Objects.requireNonNull(item, "item");
         Objects.requireNonNull(base64, "base64");
 
-        return com.skullcreator.internal.ProfileResolver.item(item, base64);
+        return com.skullcreator.internal.TextureApplier.item(item, base64);
     }
 
     /**
@@ -228,7 +228,7 @@ public class SkullCreator {
         setToSkull(block);
         Skull state = (Skull) block.getState();
         // Phase-1: delegate via resolver
-        com.skullcreator.internal.ProfileResolver.block(state, base64);
+        com.skullcreator.internal.TextureApplier.block(state, base64);
         state.update(true, false);
     }
 
@@ -257,14 +257,14 @@ public class SkullCreator {
      * Clears the profile cache. Useful for memory management in long-running servers.
      */
     public static void clearCache() {
-        com.skullcreator.internal.ProfileResolver.clearCache();
+        com.skullcreator.internal.TextureApplier.clearCache();
     }
 
     /**
      * Gets the current cache size for monitoring purposes.
      */
     public static int getCacheSize() {
-        return com.skullcreator.internal.ProfileResolver.getCacheSize();
+        return com.skullcreator.internal.TextureApplier.getCacheSize();
     }
 
     /**
@@ -273,6 +273,6 @@ public class SkullCreator {
      * @return true if reflection was initialized successfully, false otherwise.
      */
     public static boolean isReflectionInitialized() {
-        return com.skullcreator.internal.ProfileResolver.ready();
+        return com.skullcreator.internal.TextureApplier.ready();
     }
 }

@@ -1,12 +1,13 @@
 # SkullCreator
 
-![Java](https://img.shields.io/badge/language-Java%2021-orange)
-![Minecraft](https://img.shields.io/badge/MC-1.12%2B-green)
+![Java](https://img.shields.io/badge/language-Java%208-blue)
+![Minecraft](https://img.shields.io/badge/MC-1.8%2B-green)
 ![License](https://img.shields.io/github/license/diamondpixel/SkullCreator)
 
-ATTENTION THIS LIBRARY IS UNDER CONSTRUCTION AND WON'T BE AVAILABLE THROUGH MAVEN REPOSITORY UNTIL I RELEASE IT.
-CURRENTY I AM AWAY FROM HOME, AND I CAN'T WORK ON THIS. THE LIBRARY IS FUNCTIONAL UP TO 1.20.6 FULLY ONLY 1.21.x HAS
-SOME PROBLEM WITH THE BLOCKS. I WILL CONTINUE THIS PROJECT IN THE FUTURE.
+> **New in v3.1.0** – Full support for **Minecraft 1.21.x** (items *and* block skulls) while
+> still running on legacy **Java 8** servers!  
+> SkullCreator now uses reflection-powered `GameProfile` injection, so you get
+> instant, signed-texture heads without any extra dependencies.
 
 SkullCreator is a tiny library that makes creating custom player heads in CraftBukkit / Spigot / Paper plugins a breeze.  
 Stop implementing **100MB** worth of independent plugins for **1MB** worth of code when you can just use this library .
@@ -16,14 +17,13 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
 ---
 
 ## Table of Contents
-- [Features](#-features)
-- [Quick Start](#-quick-start)
-- [Usage](#-usage)
-- [Running the Demo](#-running-the-demo)
-- [Technology](#-technology)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [History](#-history)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Running the Demo](#running-the-demo)
+- [Technology](#technology)
+- [Contributing](#contributing)
+- [History](#history)
 
 ---
 
@@ -34,19 +34,19 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
   - **Base64** texture string
   - Direct **Mojang texture URL**
 - + Works on **Minecraft 1.8.x and newer** 
-- - Zero external dependencies – just one **Jar** dependency / (or a couple source files)
+- + Zero external dependencies – just one **Jar** dependency / (or a couple source files)
 
 ### Compatibility Matrix
 
 | Minecraft Version | Status | Platform |
 |-------------------|:------:|:--------:|
-| 1.21.5+           | ❓ |**Paper** (On others only the Item)
+| 1.21.x            | ✅ |**Bukkit / Spigot / Paper**
 | 1.20.x            | ✅ |**Bukkit / Spigot / Paper**
 | 1.19.x            | ✅ |**Bukkit / Spigot / Paper**
 | 1.18.x            | ✅ |**Bukkit / Spigot / Paper**
 | 1.17.x            | ✅ |**Bukkit / Spigot / Paper**
 | 1.16.x            | ✅ |**Bukkit / Spigot / Paper**
-| 1.12 – 1.8        | ✅ |**Bukkit / Spigot / Paper**
+| 1.13.x – 1.8.x    | ✅ |**Bukkit / Spigot / Paper**
 | < 1.8             | ❌ |**Bukkit / Spigot / Paper**
 
 ✅ = fully tested & working · ❓ = not yet tested · ❌ = not supported.
@@ -63,7 +63,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    }
 
    dependencies {
-       compileOnly("io.github.diamondpixel:skullcreator:3.0.1")
+       compileOnly("io.github.diamondpixel:skullcreator:3.1.0")
    }
    ```
 
@@ -74,7 +74,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    <dependency>
        <groupId>io.github.diamondpixel</groupId>
        <artifactId>skullcreator</artifactId>
-       <version>3.0.1</version>
+       <version>3.1.0</version>
        <scope>compile</scope>
    </dependency>
    ```
@@ -123,7 +123,7 @@ $ ./gradlew clean build                     # builds API + shaded demo jar
 $ ./gradlew :SkullCreatorDemoPlugin:shadowJar
 
 # Copy the resulting jar from
-#   build/Demo/libs/SkullCreatorDemoPlugin-x.x.x-SNAPSHOT.jar
+#   build/Demo/libs/SkullCreatorDemoPlugin-3.1.0-SNAPSHOT.jar
 # into your Paper / Spigot server's plugins/ folder, then run:
 > /skulltest comprehensive
 ```
@@ -133,8 +133,8 @@ The command will execute a comprehensive test of all features.
 ---
 
 ## Technology
-- **Java 8**
-- **Spigot / Paper API**
+- **Java 8 (minimum)**
+- **Spigot API**
 - **Gradle** build system (Kotlin DSL)
 
 ---
@@ -149,13 +149,6 @@ If you have an idea, bug report, or pull request:
 5. Wait for review (sometime)
 
 Please follow the existing code style and include tests / demo updates where relevant.
-
----
-
-## License
-Distributed under the **MIT License** – see [`LICENSE`](LICENSE) for more information.
-
----
 
 ## History
 Inspired by the awesome work done by **Deanveloper** in the original
