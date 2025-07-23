@@ -3,7 +3,8 @@ name: Publish to Maven Central
 on:
   push:
     tags:
-      - 'v*'   # run on version tags
+      - 'v*'           # existing trigger
+  workflow_dispatch:   # ← manual “Run workflow” button
 
 jobs:
   publish:
