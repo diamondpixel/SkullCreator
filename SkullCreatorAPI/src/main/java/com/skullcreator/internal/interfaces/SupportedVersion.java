@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * <p>
  * Example:
  * <pre><code>
- * @SupportedVersion({"1.20", "1.20.1"})
+ * &#64;SupportedVersion({"1.20", "1.20.1"})
  * public final class Patch120x implements VersionPatch {
  *     // ...
  * }
