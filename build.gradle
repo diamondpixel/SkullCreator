@@ -89,8 +89,10 @@ project(":SkullCreatorDemoPlugin") {
 if (project == rootProject) {
     nexusPublishing {
         repositories {
-            sonatype()
-            configureEach {
+            sonatype {
+                // Point to the newer s01 host instead of default oss.sonatype.org
+                nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+                snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
                 username.set(System.getenv("SONATYPE_USER"))
                 password.set(System.getenv("SONATYPE_TOKEN"))
             }
