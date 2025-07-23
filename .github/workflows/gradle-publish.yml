@@ -24,7 +24,9 @@ jobs:
           server-password: ${{ secrets.OSSRH_PASSWORD }}
 
       - name: Publish to Maven Central
-        run: .\gradlew.bat publish
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: publish
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
