@@ -54,6 +54,9 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
 
 ## Quick Start
 1. **Add the dependency** (Gradle – Kotlin DSL):
+   ```
+   NOTE: CURRENTLY I CANNOT FIGURE FOR THE LOVE OF MY LIFE TO UPLOAD TO MAVEN CENTRAL HOLY SHIT.
+   ```
 
    ```kotlin
    repositories {
