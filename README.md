@@ -65,7 +65,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    }
 
    dependencies {
-       compileOnly("io.github.diamondpixel:skullcreator:3.1.0")
+       compileOnly("io.github.diamondpixel:skullcreator:3.2.0")
    }
    ```
 
@@ -76,7 +76,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    <dependency>
        <groupId>io.github.diamondpixel</groupId>
        <artifactId>skullcreator</artifactId>
-       <version>3.1.0</version>
+       <version>3.2.0</version>
        <scope>compile</scope>
    </dependency>
    ```
