@@ -31,32 +31,22 @@ public final class v18x_120x implements VersionPatch {
     // ---------- reflection state ----------
     private final Field profileField;
     private final Constructor<?> gameProfileCtor;
-    private final Constructor<?> propertyCtor;
-    private final Field propertiesField;
-    private final Method putMethod;
+
     
     private final ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<>();
 
     public v18x_120x() {
         Field pf = null;
         Constructor<?> gpc = null;
-        Constructor<?> pc = null;
         Field prf = null;
-        Method pm = null;
         
         try {
             // ---------- resolve Mojang Authlib ----------
             Class<?> gameProfileCls = Class.forName("com.mojang.authlib.GameProfile");
-            Class<?> propertyCls = Class.forName("com.mojang.authlib.properties.Property");
-
             gpc = gameProfileCls.getConstructor(UUID.class, String.class);
-            pc = propertyCls.getConstructor(String.class, String.class);
 
             prf = gameProfileCls.getDeclaredField("properties");
             prf.setAccessible(true);
-
-            Object propsObj = prf.get(gpc.newInstance(UUID.randomUUID(), "dummy"));
-            pm = propsObj.getClass().getMethod("put", Object.class, Object.class);
 
             // ---------- CraftMetaSkull.profile ----------
             String version = Utilities.getObcVersion();
@@ -75,9 +65,6 @@ public final class v18x_120x implements VersionPatch {
         
         this.profileField = pf;
         this.gameProfileCtor = gpc;
-        this.propertyCtor = pc;
-        this.propertiesField = prf;
-        this.putMethod = pm;
     }
 
     @Override
@@ -107,7 +94,6 @@ public final class v18x_120x implements VersionPatch {
             return; // critical reflection fail
         }
         try {
-            boolean typeSet = false;
             Object gameProfile = getCachedGameProfile(base64);
             if (gameProfile == null) return;
 
@@ -117,7 +103,6 @@ public final class v18x_120x implements VersionPatch {
                 Object playerType = Enum.valueOf((Class) skullTypeCls, "PLAYER");
                 java.lang.reflect.Method setType = skull.getClass().getMethod("setSkullType", skullTypeCls);
                 setType.invoke(skull, playerType);
-                typeSet = true;
             } catch (Exception ignored) {}
 
             // Direct field injection (only confirmed working path for 1.8.x)

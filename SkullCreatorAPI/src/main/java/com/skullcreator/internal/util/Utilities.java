@@ -36,7 +36,7 @@ public final class Utilities {
     }
 
     /**
-     * Creates a Mojang-authlib GameProfile (or Bukkit PlayerProfile) with the supplied Base64 texture.
+     * Creates a Mojang-authlib GameProfile with the supplied Base64 texture.
      * The return type is {@code Object} to avoid forcing compile-time dependency on authlib classes.
      * Reflection lookups are cached for performance.
      */
@@ -48,6 +48,29 @@ public final class Utilities {
             Object profile = c.gameProfileCtor.newInstance(uuid, "");
             TexturePropertyWriter.injectTexture(profile, base64);
             return profile;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
+     * Creates a Bukkit PlayerProfile with the supplied Base64 texture (for 1.21.9+).
+     * The return type is {@code Object} to avoid forcing compile-time dependency.
+     * Uses Bukkit's official PlayerProfile API for texture injection.
+     */
+    public static Object createPlayerProfile(String base64) {
+        if (base64 == null) return null;
+        try {
+            UUID uuid = deterministicUUID(base64);
+            
+            // Create PlayerProfile via Bukkit.createPlayerProfile
+            java.lang.reflect.Method createProfileMethod = Bukkit.class.getMethod("createPlayerProfile", UUID.class, String.class);
+            Object playerProfile = createProfileMethod.invoke(null, uuid, "");
+            
+            // Inject texture using TexturePropertyWriter
+            TexturePropertyWriter.injectTexture(playerProfile, base64);
+            
+            return playerProfile;
         } catch (Throwable t) {
             return null;
         }

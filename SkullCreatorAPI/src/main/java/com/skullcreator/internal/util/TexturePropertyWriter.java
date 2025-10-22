@@ -26,25 +26,19 @@ public final class TexturePropertyWriter {
             Method getTex = profileObj.getClass().getMethod("getTextures");
             Object textures = getTex.invoke(profileObj);
             if (textures != null) {
-                // Extract URL from Base64 JSON if present
                 URL url = extractUrl(base64);
                 if (url != null) {
                     Method setSkin;
                     try {
                         setSkin = textures.getClass().getMethod("setSkin", URL.class);
                     } catch (NoSuchMethodException nf) {
-                        // method with model param
                         setSkin = textures.getClass().getMethod("setSkin", URL.class, Class.forName("org.bukkit.profile.PlayerTextures$SkinModel"));
                     }
                     setSkin.invoke(textures, url);
-                    // Ensure changes are stored back in profile using PlayerTextures interface
                     Class<?> ptIface = Class.forName("org.bukkit.profile.PlayerTextures");
                     Method setTextures = profileObj.getClass().getMethod("setTextures", ptIface);
                     setTextures.invoke(profileObj, textures);
-                    // fall through to also inject raw property for backward compatibility
-                    if (System.getProperty("DEBUG") != null) {
-                        LOGGER.log(Level.FINE, "Falling through to inject raw property for backward compatibility");
-                    }
+                    return; // Success
                 }
             }
         } catch (Exception ignored) {}
@@ -54,14 +48,26 @@ public final class TexturePropertyWriter {
             if (m.getName().equals("setProperty")) {
                 Class<?>[] pt = m.getParameterTypes();
                 if (pt.length == 2 && pt[0] == String.class && pt[1] == String.class) {
-                    try { m.invoke(profileObj, "textures", base64); return; } catch (Exception ignored) {}
+                    try { 
+                        m.invoke(profileObj, "textures", base64);
+                        return; // Success
+                    } catch (Exception ignored) {}
                 }
             }
         }
+        
         // 3) Deep reflection into Authlib PropertyMap
         try {
-            Method getProps = profileObj.getClass().getMethod("getProperties");
-            Object props = getProps.invoke(profileObj);
+            Object props = null;
+            try {
+                Method getProps = profileObj.getClass().getMethod("getProperties");
+                props = getProps.invoke(profileObj);
+            } catch (NoSuchMethodException e) {
+                java.lang.reflect.Field propsField = profileObj.getClass().getDeclaredField("properties");
+                propsField.setAccessible(true);
+                props = propsField.get(profileObj);
+            }
+            
             Class<?> propClass = Class.forName("com.mojang.authlib.properties.Property");
             Constructor<?> propCtor;
             Object propObj;
@@ -69,24 +75,29 @@ public final class TexturePropertyWriter {
                 propCtor = propClass.getConstructor(String.class, String.class);
                 propObj = propCtor.newInstance("textures", base64);
             } catch (NoSuchMethodException nf) {
-                // Older authlib (1.8) uses (String, String, String)
                 propCtor = propClass.getConstructor(String.class, String.class, String.class);
                 propObj = propCtor.newInstance("textures", base64, "");
             }
 
+            // Try to add the property to PropertyMap
             try {
-                Method put = props.getClass().getMethod("put", Object.class, Object.class);
+                Method put = props.getClass().getMethod("put", String.class, propClass);
                 put.invoke(props, "textures", propObj);
-            } catch (NoSuchMethodException ex) {
-                Method add = props.getClass().getDeclaredMethod("add", Object.class);
-                add.setAccessible(true);
-                add.invoke(props, propObj);
+            } catch (Exception e) {
+                try {
+                    Method put = props.getClass().getMethod("put", Object.class, Object.class);
+                    put.invoke(props, "textures", propObj);
+                } catch (Exception e2) {
+                    Method putAll = props.getClass().getMethod("putAll", String.class, java.lang.Iterable.class);
+                    java.util.List<Object> list = java.util.Collections.singletonList(propObj);
+                    putAll.invoke(props, "textures", list);
+                }
             }
         } catch (Exception ignored) {}
     }
 
     // naive extractor
-    private static URL extractUrl(String b64) {
+    public static URL extractUrl(String b64) {
         try {
             String json = new String(Base64.getDecoder().decode(b64));
             int idx = json.indexOf("\"url\":\"");

@@ -4,29 +4,31 @@ import com.skullcreator.internal.PatchesRegistry;
 import com.skullcreator.internal.interfaces.SupportedVersion;
 import com.skullcreator.internal.interfaces.VersionPatch;
 import com.skullcreator.internal.util.Utilities;
-import com.skullcreator.internal.util.TexturePropertyWriter;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 /**
- * Patch for Minecraft 1.21.x where Bukkit switched fully to PlayerProfile API.
+ * Patch for Minecraft 1.21 - 1.21.8 where Bukkit switched fully to PlayerProfile API.
  */
-@SupportedVersion({"1.21."})
-public final class v121x implements VersionPatch {
+@SupportedVersion({
+        "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4",
+        "1.21.5", "1.21.6", "1.21.7", "1.21.8"
+})
+public final class v121x_1218 implements VersionPatch {
 
-    static { PatchesRegistry.register(new v121x()); }
+    static {
+        PatchesRegistry.register(new v121x_1218());
+    }
 
     private final ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<>();
 
     // Use legacy GameProfile injection because Bukkit 1.21 requires signed textures
     private static final Field SKULL_PROFILE_FIELD;
+
     static {
         Field pf = null;
         try {
@@ -39,7 +41,9 @@ public final class v121x implements VersionPatch {
             }
             pf = cms.getDeclaredField("profile");
             pf.setAccessible(true);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            // Reflection failed
+        }
         SKULL_PROFILE_FIELD = pf;
     }
 
@@ -62,6 +66,7 @@ public final class v121x implements VersionPatch {
         // Build object compatible with CraftMetaSkull.profile type
         Object profileObj = gp;
         Class<?> fieldType = SKULL_PROFILE_FIELD.getType();
+        
         if (!fieldType.isAssignableFrom(gp.getClass())) {
             // Attempt to wrap into ResolvableProfile (1.21+)
             try {
@@ -79,13 +84,17 @@ public final class v121x implements VersionPatch {
                         break;
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                // Failed to wrap
+            }
         }
 
         try {
             SKULL_PROFILE_FIELD.set(meta, profileObj);
             item.setItemMeta(meta);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            // Failed to set profile
+        }
         return item;
     }
 
@@ -101,13 +110,14 @@ public final class v121x implements VersionPatch {
 
     @Override
     public void applyToBlock(Skull skull, String base64) {
-        if (base64 == null || skull == null) return;
+        if (base64 == null || skull == null) {
+            return;
+        }
 
         // locate the profile field lazily
         Field pf = BLOCK_PROFILE_FIELD;
         if (pf == null) {
             for (Field f : skull.getClass().getDeclaredFields()) {
-                Class<?> type = f.getType();
                 String name = f.getName().toLowerCase();
                 if (name.contains("profile") || name.contains("gameprofile")) {
                     f.setAccessible(true);
@@ -118,13 +128,18 @@ public final class v121x implements VersionPatch {
             BLOCK_PROFILE_FIELD = pf; // may be null if not found
         }
 
-        if (pf == null) return;
+        if (pf == null) {
+            return;
+        }
 
         Object gp = getCachedGameProfile(base64);
-        if (gp == null) return;
+        if (gp == null) {
+            return;
+        }
 
         Object profileObj = gp;
         Class<?> fieldType = pf.getType();
+        
         if (!fieldType.isAssignableFrom(gp.getClass())) {
             try {
                 for (java.lang.reflect.Constructor<?> c : fieldType.getDeclaredConstructors()) {
@@ -140,14 +155,18 @@ public final class v121x implements VersionPatch {
                         break;
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                // Failed to wrap
+            }
         }
 
         try {
             pf.set(skull, profileObj);
             // ensure block state updates
             skull.update(true, true);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            // Failed to update block
+        }
     }
 
     @Override

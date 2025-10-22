@@ -32,6 +32,9 @@ public interface VersionPatch {
      * Implementations can rely on the {@link SupportedVersion} annotation instead
      * of overriding this method. If the annotation is present, the default
      * implementation performs a prefix check on all declared values.
+     * <p>
+     * Supports the "+" suffix to indicate "this version and above".
+     * Example: "1.21.9+" will match 1.21.9, 1.21.10, 1.21.11, etc.
      *
      * @param version full Bukkit version, e.g. "1.20.6-R0.1-SNAPSHOT"
      * @return {@code true} if the patch should be used
@@ -42,11 +45,83 @@ public interface VersionPatch {
             return false;
         }
         for (String prefix : ann.value()) {
-            if (version.startsWith(prefix)) {
-                return true;
+            // Check for "+" suffix indicating "this version and above"
+            if (prefix.endsWith("+")) {
+                String minVersion = prefix.substring(0, prefix.length() - 1);
+                if (compareVersions(version, minVersion) >= 0) {
+                    return true;
+                }
+            } else if (version.startsWith(prefix)) {
+                // Ensure we don't match partial version numbers
+                // e.g., "1.21" should match "1.21-R0.1" but not "1.21.10"
+                int nextIdx = prefix.length();
+                if (nextIdx >= version.length()) {
+                    return true; // Exact match
+                }
+                char nextChar = version.charAt(nextIdx);
+                // Next char should be '-', '_', or any non-digit separator (not '.' followed by digit)
+                if (nextChar != '.' && !Character.isDigit(nextChar)) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    /**
+     * Compares two version strings numerically.
+     * Only compares the numeric parts (e.g., "1.21.9" from "1.21.9-R0.1-SNAPSHOT").
+     *
+     * @param version1 first version string
+     * @param version2 second version string
+     * @return negative if version1 < version2, zero if equal, positive if version1 > version2
+     */
+    default int compareVersions(String version1, String version2) {
+        // Extract numeric version parts (e.g., "1.21.9" from "1.21.9-R0.1-SNAPSHOT")
+        String v1 = extractNumericVersion(version1);
+        String v2 = extractNumericVersion(version2);
+
+        String[] parts1 = v1.split("\\.");
+        String[] parts2 = v2.split("\\.");
+
+        int maxLength = Math.max(parts1.length, parts2.length);
+        for (int i = 0; i < maxLength; i++) {
+            int num1 = i < parts1.length ? parseVersionPart(parts1[i]) : 0;
+            int num2 = i < parts2.length ? parseVersionPart(parts2[i]) : 0;
+            
+            if (num1 != num2) {
+                return num1 - num2;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Extracts the numeric version portion from a full version string.
+     * Example: "1.21.9-R0.1-SNAPSHOT" → "1.21.9"
+     */
+    default String extractNumericVersion(String version) {
+        // Find the first non-numeric separator like '-' or '_'
+        int endIndex = version.length();
+        for (int i = 0; i < version.length(); i++) {
+            char c = version.charAt(i);
+            if (c == '-' || c == '_') {
+                endIndex = i;
+                break;
+            }
+        }
+        return version.substring(0, endIndex);
+    }
+
+    /**
+     * Parses a version part string to an integer, handling non-numeric parts gracefully.
+     */
+    default int parseVersionPart(String part) {
+        try {
+            return Integer.parseInt(part);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     /**

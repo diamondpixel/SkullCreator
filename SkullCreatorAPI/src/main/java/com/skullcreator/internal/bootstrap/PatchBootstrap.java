@@ -23,10 +23,12 @@ public final class PatchBootstrap {
         String version = Bukkit.getBukkitVersion();
 
         // Ensure patch classes are loaded so their static blocks register them
+        // Order matters: more specific version ranges should be loaded first
         try {
             String[] patchClasses = {
-                    "com.skullcreator.internal.patches.v18x_120x",
-                    "com.skullcreator.internal.patches.v121x"
+                    "com.skullcreator.internal.patches.v1219",        // 1.21.9+ (most specific)
+                    "com.skullcreator.internal.patches.v121x_1218",   // 1.21.0-1.21.8
+                    "com.skullcreator.internal.patches.v18x_120x"     // 1.8-1.20 (broadest)
             };
             ClassLoader cl = PatchBootstrap.class.getClassLoader();
             for (String cn : patchClasses) {
