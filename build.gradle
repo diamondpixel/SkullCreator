@@ -35,10 +35,12 @@ subprojects {
                 create("maven", MavenPublication) {
                     from(components["java"])
 
+                    artifactId = "skullcreator-api"
+
                     pom {
                         name.set("skullcreator")
                         description.set("A library to create player skulls from usernames, UUIDs, base64, or URLs.")
-                        url.set("https://github.com/diamondpixel/skullcreator")
+                        url.set("https://github.com/nicholasveronico/SkullCreator")
 
                         licenses {
                             license {
@@ -55,9 +57,9 @@ subprojects {
                         }
 
                         scm {
-                            connection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
-                            developerConnection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
-                            url.set("https://github.com/diamondpixel/skullcreator")
+                            connection.set("scm:git:https://github.com/nicholasveronico/SkullCreator.git")
+                            developerConnection.set("scm:git:https://github.com/nicholasveronico/SkullCreator.git")
+                            url.set("https://github.com/nicholasveronico/SkullCreator")
                         }
                     }
                 }
