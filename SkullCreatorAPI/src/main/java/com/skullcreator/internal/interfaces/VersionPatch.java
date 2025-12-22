@@ -74,7 +74,7 @@ public interface VersionPatch {
      *
      * @param version1 first version string
      * @param version2 second version string
-     * @return negative if version1 < version2, zero if equal, positive if version1 > version2
+     * @return negative if version1 &lt; version2, zero if equal, positive if version1 &gt; version2
      */
     default int compareVersions(String version1, String version2) {
         // Extract numeric version parts (e.g., "1.21.9" from "1.21.9-R0.1-SNAPSHOT")
