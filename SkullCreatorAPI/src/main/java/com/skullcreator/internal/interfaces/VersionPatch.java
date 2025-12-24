@@ -52,6 +52,11 @@ public interface VersionPatch {
                     return true;
                 }
             } else if (version.startsWith(prefix)) {
+                // If the prefix already ends with '.', it's a complete segment prefix (e.g. "1.8.")
+                if (prefix.endsWith(".")) {
+                    return true;
+                }
+                
                 // Ensure we don't match partial version numbers
                 // e.g., "1.21" should match "1.21-R0.1" but not "1.21.10"
                 int nextIdx = prefix.length();
