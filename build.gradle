@@ -4,7 +4,7 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
-group = "io.github.nicholasveronico"
+group = "io.github.diamondpixel"
 version = "3.1.0"
 
 subprojects {
@@ -40,7 +40,7 @@ subprojects {
                     pom {
                         name.set("skullcreator")
                         description.set("A library to create player skulls from usernames, UUIDs, base64, or URLs.")
-                        url.set("https://github.com/nicholasveronico/SkullCreator")
+                        url.set("https://github.com/diamondpixel/SkullCreator")
 
                         licenses {
                             license {
@@ -57,9 +57,9 @@ subprojects {
                         }
 
                         scm {
-                            connection.set("scm:git:https://github.com/nicholasveronico/SkullCreator.git")
-                            developerConnection.set("scm:git:https://github.com/nicholasveronico/SkullCreator.git")
-                            url.set("https://github.com/nicholasveronico/SkullCreator")
+                            connection.set("scm:git:https://github.com/diamondpixel/SkullCreator.git")
+                            developerConnection.set("scm:git:https://github.com/diamondpixel/SkullCreator.git")
+                            url.set("https://github.com/diamondpixel/SkullCreator")
                         }
                     }
                 }

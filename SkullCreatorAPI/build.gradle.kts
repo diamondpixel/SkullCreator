@@ -2,7 +2,7 @@ plugins {
     `java-library`
 }
 
-group = "io.github.nicholasveronico"
+group = "io.github.diamondpixel"
 version = "3.2.1"
 
 java {

@@ -9,7 +9,7 @@ java {
     }
 }
 
-group = "io.github.nicholasveronico"
+group = "io.github.diamondpixel"
 version = "2.0.4-SNAPSHOT"
 
 repositories {
