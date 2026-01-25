@@ -22,8 +22,8 @@ jobs:
           cache: gradle
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          
-      - name: Make gradlew executable
+
+      - name: Make Gradle Wrapper Executable
         run: chmod +x gradlew
 
       - name: Publish to Maven Central

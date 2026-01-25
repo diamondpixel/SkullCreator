@@ -17,16 +17,13 @@ subprojects {
     }
 
     java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(8))
-        }
+        toolchain.languageVersion.set(JavaLanguageVersion.of(8))
     }
 
     group = rootProject.group
     version = rootProject.version
 
-    if (name == "SkullCreatorAPI") {
-
+    if (project.name == "SkullCreatorAPI") {
         java {
             withSourcesJar()
             withJavadocJar()
@@ -36,11 +33,10 @@ subprojects {
             publications {
                 maven(MavenPublication) {
                     from components.java
-
                     artifactId = "skullcreator-api"
 
                     pom {
-                        name = "SkullCreator"
+                        name = "skullcreator"
                         description = "A library to create player skulls from usernames, UUIDs, base64, or URLs."
                         url = "https://github.com/diamondpixel/SkullCreator"
 
@@ -68,16 +64,18 @@ subprojects {
             }
         }
 
-        // IMPORTANT: signing AFTER publication exists
-        afterEvaluate {
-            signing {
-                sign(publishing.publications.maven)
+        signing {
+            def signingKey = System.getenv("GPG_PRIVATE_KEY")
+            def signingPassword = System.getenv("GPG_PASSPHRASE")
+            if (signingKey && signingPassword) {
+                useInMemoryPgpKeys(signingKey, signingPassword)
+                sign publishing.publications.maven
             }
         }
     }
 }
 
-// Custom build directories (optional, safe)
+// Custom build directories
 project(":SkullCreatorAPI") {
     layout.buildDirectory = file("${rootDir}/build/API")
 }
@@ -86,14 +84,15 @@ project(":SkullCreatorDemoPlugin") {
     layout.buildDirectory = file("${rootDir}/build/Demo")
 }
 
-// Sonatype Central (s01)
+// Nexus Publishing (Portal Compatibility API)
 nexusPublishing {
     repositories {
         sonatype {
-            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
-            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            username = System.getenv("SONATYPE_USER")
-            password = System.getenv("SONATYPE_TOKEN")
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+
+            username.set(System.getenv("SONATYPE_USER"))
+            password.set(System.getenv("SONATYPE_TOKEN"))
         }
     }
 }
