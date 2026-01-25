@@ -1,8 +1,11 @@
 plugins {
     id 'java-library'
-    // Adds tasks to upload a deployment bundle to the new Central Portal
+    // Nexus Publish Plugin (works with the Central compatibility staging API endpoints below)
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
+
+group = "io.github.diamondpixel"
+version = "3.1.0"
 
 subprojects {
     apply plugin: 'java'
@@ -10,9 +13,7 @@ subprojects {
     apply plugin: 'signing'
 
     repositories {
-        maven {
-            url 'https://repo.papermc.io/repository/maven-public/'
-        }
+        maven { url 'https://repo.papermc.io/repository/maven-public/' }
         mavenCentral()
     }
 
@@ -20,23 +21,30 @@ subprojects {
         toolchain.languageVersion.set(JavaLanguageVersion.of(8))
     }
 
-    group = "io.github.diamondpixel"
-    version = "3.1.0"
+    group = rootProject.group
+    version = rootProject.version
 
     if (project.name == "SkullCreatorAPI") {
+        java {
+            withSourcesJar()
+            withJavadocJar()
+        }
+
         publishing {
             publications {
                 create("maven", MavenPublication) {
                     from(components["java"])
 
+                    artifactId = "skullcreator-api"
+
                     pom {
                         name.set("skullcreator")
                         description.set("A library to create player skulls from usernames, UUIDs, base64, or URLs.")
-                        url.set("https://github.com/diamondpixel/skullcreator")
+                        url.set("https://github.com/diamondpixel/SkullCreator")
 
                         licenses {
                             license {
-                                name.set("MIT License") // Update if needed
+                                name.set("MIT License")
                                 url.set("https://opensource.org/licenses/MIT")
                             }
                         }
@@ -44,34 +52,27 @@ subprojects {
                         developers {
                             developer {
                                 id.set("diamondpixel")
-                                name.set("DiamondPixel") // Optional display name
+                                name.set("DiamondPixel")
                             }
                         }
 
                         scm {
-                            connection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
-                            developerConnection.set("scm:git:https://github.com/diamondpixel/skullcreator.git")
-                            url.set("https://github.com/diamondpixel/skullcreator")
+                            connection.set("scm:git:https://github.com/diamondpixel/SkullCreator.git")
+                            developerConnection.set("scm:git:https://github.com/diamondpixel/SkullCreator.git")
+                            url.set("https://github.com/diamondpixel/SkullCreator")
                         }
                     }
                 }
             }
-
-            // No direct repository; upload handled by nexusPublishing plugin
         }
 
         signing {
-            // Sign artifacts using PGP key stored in GitHub Secrets (loaded as env vars)
+            // Use env vars
             useInMemoryPgpKeys(
                 System.getenv("GPG_PRIVATE_KEY"),
                 System.getenv("GPG_PASSPHRASE")
             )
             sign(publishing.publications["maven"])
-        }
-
-        java {
-            withSourcesJar()
-            withJavadocJar()
         }
     }
 }
@@ -85,17 +86,16 @@ project(":SkullCreatorDemoPlugin") {
     buildDir = "${rootDir}/build/Demo"
 }
 
-// Configure Central Portal publishing once per root project
-if (project == rootProject) {
-    nexusPublishing {
-        repositories {
-            sonatype {
-                // Point to the newer s01 host instead of default oss.sonatype.org
-                nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-                snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-                username.set(System.getenv("SONATYPE_USER"))
-                password.set(System.getenv("SONATYPE_TOKEN"))
-            }
+nexusPublishing {
+    repositories {
+        sonatype {
+            // Compatibility staging API
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            // Snapshots repo on Central
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+
+            username.set(System.getenv("SONATYPE_USER"))
+            password.set(System.getenv("SONATYPE_TOKEN"))
         }
     }
 }

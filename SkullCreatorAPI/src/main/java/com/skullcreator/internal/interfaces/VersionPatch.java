@@ -52,6 +52,11 @@ public interface VersionPatch {
                     return true;
                 }
             } else if (version.startsWith(prefix)) {
+                // If the prefix already ends with '.', it's a complete segment prefix (e.g. "1.8.")
+                if (prefix.endsWith(".")) {
+                    return true;
+                }
+                
                 // Ensure we don't match partial version numbers
                 // e.g., "1.21" should match "1.21-R0.1" but not "1.21.10"
                 int nextIdx = prefix.length();
@@ -74,7 +79,7 @@ public interface VersionPatch {
      *
      * @param version1 first version string
      * @param version2 second version string
-     * @return negative if version1 < version2, zero if equal, positive if version1 > version2
+     * @return negative if version1 &lt; version2, zero if equal, positive if version1 &gt; version2
      */
     default int compareVersions(String version1, String version2) {
         // Extract numeric version parts (e.g., "1.21.9" from "1.21.9-R0.1-SNAPSHOT")
