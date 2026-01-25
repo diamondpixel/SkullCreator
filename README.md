@@ -3,7 +3,7 @@
 ![Java](https://img.shields.io/badge/language-Java%208-blue)
 ![Minecraft](https://img.shields.io/badge/MC-1.8%2B-green)
 
-> **New in v3.1.0** – Full support for **Minecraft 1.21.x** (items *and* block skulls) while
+> **New in v3.2.1** – Full support for **Minecraft 1.21.x** (items *and* block skulls) while
 > still running on legacy **Java 8** servers!  
 > SkullCreator now uses reflection-powered `GameProfile` injection, so you get
 > instant, signed-texture heads without any extra dependencies.
@@ -54,10 +54,6 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
 
 ## Quick Start
 1. **Add the dependency** (Gradle – Kotlin DSL):
-   ```
-   NOTE: CURRENTLY I CANNOT FIGURE FOR THE LOVE OF MY LIFE TO UPLOAD TO MAVEN CENTRAL HOLY SHIT.
-   ```
-
    ```kotlin
    repositories {
        // add Paper repo for Spigot snapshots
@@ -65,7 +61,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    }
 
    dependencies {
-       compileOnly("io.github.diamondpixel:skullcreator:3.2.0")
+       compileOnly("io.github.diamondpixel:skullcreator:3.2.1")
    }
    ```
 
@@ -76,7 +72,7 @@ Stop implementing **100MB** worth of independent plugins for **1MB** worth of co
    <dependency>
        <groupId>io.github.diamondpixel</groupId>
        <artifactId>skullcreator</artifactId>
-       <version>3.2.0</version>
+       <version>3.2.1</version>
        <scope>compile</scope>
    </dependency>
    ```
