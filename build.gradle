@@ -17,13 +17,16 @@ subprojects {
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(8))
+        }
     }
 
     group = rootProject.group
     version = rootProject.version
 
-    if (project.name == "SkullCreatorAPI") {
+    if (name == "SkullCreatorAPI") {
+
         java {
             withSourcesJar()
             withJavadocJar()
@@ -37,7 +40,7 @@ subprojects {
                     artifactId = "skullcreator-api"
 
                     pom {
-                        name = "skullcreator"
+                        name = "SkullCreator"
                         description = "A library to create player skulls from usernames, UUIDs, base64, or URLs."
                         url = "https://github.com/diamondpixel/SkullCreator"
 
@@ -65,18 +68,16 @@ subprojects {
             }
         }
 
-        signing {
-            def signingKey = System.getenv("GPG_PRIVATE_KEY")
-            def signingPassword = System.getenv("GPG_PASSPHRASE")
-            if (signingKey && signingPassword) {
-                useInMemoryPgpKeys(signingKey, signingPassword)
-                sign publishing.publications.maven
+        // IMPORTANT: signing AFTER publication exists
+        afterEvaluate {
+            signing {
+                sign(publishing.publications.maven)
             }
         }
     }
 }
 
-// Custom build output directories (using layout.buildDirectory for Gradle 8+)
+// Custom build directories (optional, safe)
 project(":SkullCreatorAPI") {
     layout.buildDirectory = file("${rootDir}/build/API")
 }
@@ -85,12 +86,12 @@ project(":SkullCreatorDemoPlugin") {
     layout.buildDirectory = file("${rootDir}/build/Demo")
 }
 
+// Sonatype Central (s01)
 nexusPublishing {
     repositories {
         sonatype {
             nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
             snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-
             username = System.getenv("SONATYPE_USER")
             password = System.getenv("SONATYPE_TOKEN")
         }
